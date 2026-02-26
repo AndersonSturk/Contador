@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador: Felicidade</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 { font-size: 1.5rem; margin-bottom: 1.5rem; }
+
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .time-box {
+            background: #334155;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .number {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+        }
+
+        #mensagem {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #22c55e;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Quanto falta para ver o meu amorzinho? ❤️</h1>
+        
+        <label for="data">Selecione a data e hora:</label>
+        <input type="datetime-local" id="dataTarget" onchange="salvarData()">
+
+        <div class="countdown">
+            <div class="time-box">
+                <span class="number" id="dias">00</span>
+                <span class="label">Dias</span>
+            </div>
+            <div class="time-box">
+                <span class="number" id="horas">00</span>
+                <span class="label">Horas</span>
+            </div>
+            <div class="time-box">
+                <span class="number" id="minutos">00</span>
+                <span class="label">Minutos</span>
+            </div>
+            <div class="time-box">
+                <span class="number" id="segundos">00</span>
+                <span class="label">Segundos</span>
+            </div>
+        </div>
+
+        <div id="mensagem"></div>
+    </div>
+
+    <script>
+        let interval;
+
+        // Tenta carregar data salva no navegador
+        window.onload = () => {
+            const salva = localStorage.getItem('dataDayane');
+            if(salva) {
+                document.getElementById('dataTarget').value = salva;
+                startCountdown();
+            }
+        }
+
+        function salvarData() {
+            const data = document.getElementById('dataTarget').value;
+            localStorage.setItem('dataDayane', data);
+            startCountdown();
+        }
+
+        function startCountdown() {
+            if(interval) clearInterval(interval);
+
+            interval = setInterval(() => {
+                const target = new Date(document.getElementById('dataTarget').value).getTime();
+                const agora = new Date().getTime();
+                const diff = target - agora;
+
+                if (isNaN(target) || diff <= 0) {
+                    document.getElementById('mensagem').innerText = diff <= 0 ? "É HOJE! 😍" : "";
+                    zerar();
+                    return;
+                }
+
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('dias').innerText = d.toString().padStart(2, '0');
+                document.getElementById('horas').innerText = h.toString().padStart(2, '0');
+                document.getElementById('minutos').innerText = m.toString().padStart(2, '0');
+                document.getElementById('segundos').innerText = s.toString().padStart(2, '0');
+                document.getElementById('mensagem').innerText = "Contagem regressiva ativada!";
+            }, 1000);
+        }
+
+        function zerar() {
+            document.getElementById('dias').innerText = "00";
+            document.getElementById('horas').innerText = "00";
+            document.getElementById('minutos').innerText = "00";
+            document.getElementById('segundos').innerText = "00";
+            clearInterval(interval);
+        }
+    </script>
+</body>
+</html>
